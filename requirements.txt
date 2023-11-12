@@ -1,0 +1,7 @@
+openai
+moviepy
+google-cloud-texttospeech
+google-cloud-speech
+google-api-python-client
+google-auth-oauthlib
+requests
