@@ -1,8 +1,9 @@
 import sys
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QPushButton, QVBoxLayout, QHBoxLayout,
-                             QWidget, QLabel, QLineEdit, QFrame, QStackedWidget)
-from PyQt5.QtGui import QFont
-from PyQt5.QtCore import Qt
+                             QWidget, QLabel, QLineEdit, QFrame, QTabWidget, QListWidget, QListWidgetItem)
+from PyQt5.QtCore import QSize
+from PyQt5.QtGui import QFont, QIcon
+from qt_material import apply_stylesheet
 
 class AutomationClipsApp(QMainWindow):
     def __init__(self):
@@ -10,121 +11,111 @@ class AutomationClipsApp(QMainWindow):
         self.initUI()
 
     def initUI(self):
-        # Basis UI-Konfiguration
         self.setWindowTitle("Automation Clips")
         self.setGeometry(100, 100, 1200, 800)
-        self.setStyleSheet("background-color: #1A1A1A;")  # Anthrazit Hintergrund
 
-        # Hauptlayout
         layout = QHBoxLayout()
 
-        # Seitenmenü
         self.initSideMenu(layout)
 
-        # Hauptinhalt
-        self.main_content = QStackedWidget()
+        self.main_content = QTabWidget()
         self.initMainContent()
         layout.addWidget(self.main_content)
 
-        # Zentralwidget einstellen
         central_widget = QWidget()
         central_widget.setLayout(layout)
         self.setCentralWidget(central_widget)
 
     def initSideMenu(self, layout):
         self.side_menu = QFrame()
-        self.side_menu.setFixedWidth(200)
-        self.side_menu.setStyleSheet("background-color: #333;")
+        self.side_menu.setFixedWidth(300)
         side_menu_layout = QVBoxLayout(self.side_menu)
+        side_menu_layout.setSpacing(10)
 
-        # Schreibmaschinenschriftart
         font = QFont("Courier", 10, QFont.Bold)
 
-        # Buttons für verschiedene Funktionen
         btn_generate_video = QPushButton("Video generieren")
         btn_generate_video.setFont(font)
-        btn_generate_video.setStyleSheet("color: white; background-color: #333; border-radius: 10px;")
-        btn_generate_video.clicked.connect(self.generateVideo)
+        btn_generate_video.clicked.connect(lambda: self.main_content.setCurrentIndex(0))
 
         btn_upload_video = QPushButton("Video hochladen")
         btn_upload_video.setFont(font)
-        btn_upload_video.setStyleSheet("color: white; background-color: #333; border-radius: 10px;")
-        btn_upload_video.clicked.connect(self.uploadVideo)
+        btn_upload_video.clicked.connect(lambda: self.main_content.setCurrentIndex(1))
+
+        btn_drafts = QPushButton("Entwürfe")
+        btn_drafts.setFont(font)
+        btn_drafts.clicked.connect(lambda: self.main_content.setCurrentIndex(2))
 
         side_menu_layout.addWidget(btn_generate_video)
         side_menu_layout.addWidget(btn_upload_video)
+        side_menu_layout.addWidget(btn_drafts)
 
         layout.addWidget(self.side_menu)
 
     def initMainContent(self):
-        # Schreibmaschinenschriftart
-        font = QFont("Courier", 10, QFont.Bold)
+        self.initPageGenerate()
+        self.initPageUpload()
+        self.initPageDrafts()
 
-        # Seite 1: Video generieren
-        self.page_generate = QWidget()
-        layout_generate = QVBoxLayout(self.page_generate)
+    def initPageGenerate(self):
+        page_generate = QWidget()
+        layout_generate = QVBoxLayout(page_generate)
         label_generate = QLabel("Video generieren")
-        label_generate.setFont(font)
-        label_generate.setStyleSheet("color: white;")
+        label_generate.setFont(QFont("Courier", 10, QFont.Bold))
         layout_generate.addWidget(label_generate)
 
-        self.input_generate = QLineEdit("Geben Sie Ihren Text ein")
-        self.input_generate.setFont(font)
-        self.input_generate.setStyleSheet("color: white; background-color: black;")
-        layout_generate.addWidget(self.input_generate)
+        input_generate = QLineEdit("Geben Sie Ihren Text ein")
+        input_generate.setFont(QFont("Courier", 10, QFont.Bold))
+        layout_generate.addWidget(input_generate)
 
         btn_start_generation = QPushButton("Generieren starten")
-        btn_start_generation.setFont(font)
-        btn_start_generation.setStyleSheet("color: white; background-color: #333; border-radius: 10px;")
-        btn_start_generation.clicked.connect(self.startGeneration)
+        btn_start_generation.setFont(QFont("Courier", 10, QFont.Bold))
         layout_generate.addWidget(btn_start_generation)
 
-        # Seite 2: Video hochladen
-        self.page_upload = QWidget()
-        layout_upload = QVBoxLayout(self.page_upload)
+        self.main_content.addTab(page_generate, "Generieren")
+
+    def initPageUpload(self):
+        page_upload = QWidget()
+        layout_upload = QVBoxLayout(page_upload)
         label_upload = QLabel("Video hochladen")
-        label_upload.setFont(font)
-        label_upload.setStyleSheet("color: white;")
+        label_upload.setFont(QFont("Courier", 10, QFont.Bold))
         layout_upload.addWidget(label_upload)
 
-        self.input_upload = QLineEdit("Pfad zum Video")
-        self.input_upload.setFont(font)
-        self.input_upload.setStyleSheet("color: white; background-color: black;")
-        layout_upload.addWidget(self.input_upload)
+        input_upload = QLineEdit("Pfad zum Video")
+        input_upload.setFont(QFont("Courier", 10, QFont.Bold))
+        layout_upload.addWidget(input_upload)
 
         btn_start_upload = QPushButton("Hochladen starten")
-        btn_start_upload.setFont(font)
-        btn_start_upload.setStyleSheet("color: white; background-color: #333; border-radius: 10px;")
-        btn_start_upload.clicked.connect(self.startUpload)
+        btn_start_upload.setFont(QFont("Courier", 10, QFont.Bold))
         layout_upload.addWidget(btn_start_upload)
 
-        # Fügen Sie Seiten zum Hauptinhalt hinzu
-        self.main_content.addWidget(self.page_generate)
-        self.main_content.addWidget(self.page_upload)
+        self.main_content.addTab(page_upload, "Hochladen")
 
-    def generateVideo(self):
-        self.main_content.setCurrentWidget(self.page_generate)
+    def initPageDrafts(self):
+        page_drafts = QWidget()
+        layout_drafts = QVBoxLayout(page_drafts)
+        label_drafts = QLabel("Entwürfe")
+        label_drafts.setFont(QFont("Courier", 10, QFont.Bold))
+        layout_drafts.addWidget(label_drafts)
 
-    def uploadVideo(self):
-        self.main_content.setCurrentWidget(self.page_upload)
+        self.drafts_list = QListWidget()
+        self.drafts_list.setIconSize(QSize(100, 100))
+        layout_drafts.addWidget(self.drafts_list)
 
-    def startGeneration(self):
-        # Logik zum Generieren eines Videos
-        text = self.input_generate.text()
-        print(f"Generiere Video mit Text: {text}")
+        for i in range(5):
+            item = QListWidgetItem(f"Entwurf {i+1}")
+            item.setIcon(QIcon("path/to/preview/image.png"))  # Ersetzen Sie dies durch den korrekten Pfad
+            self.drafts_list.addItem(item)
 
-    def startUpload(self):
-        # Logik zum Hochladen eines Videos
-        video_path = self.input_upload.text()
-        print(f"Video hochladen: {video_path}")
+        self.main_content.addTab(page_drafts, "Entwürfe")
 
 def main():
     app = QApplication(sys.argv)
     main_window = AutomationClipsApp()
+    apply_stylesheet(app, theme='dark_teal.xml')
     main_window.show()
     sys.exit(app.exec_())
 
 if __name__ == "__main__":
     main()
-
 
