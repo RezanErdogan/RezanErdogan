@@ -3,7 +3,7 @@ from video_creator import create_video
 from text_to_speech import convert_text_to_speech
 from speech_to_text import convert_speech_to_text
 from youtube_uploader import upload_to_youtube
-from tiktok_uploader import upload_video_to_tiktok
+from testing.tiktok_uploader import upload_video_to_tiktok
 import logging
 
 def main():
