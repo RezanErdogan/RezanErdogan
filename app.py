@@ -1,6 +1,7 @@
 import sys
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QPushButton, QVBoxLayout, QHBoxLayout,
-                             QWidget, QLabel, QLineEdit, QFrame, QTabWidget, QListWidget, QListWidgetItem)
+                             QWidget, QLabel, QLineEdit, QFrame, QTabWidget, QListWidget, QListWidgetItem,
+                             QFileDialog, QProgressBar, QTextEdit, QComboBox)
 from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QFont, QIcon
 from qt_material import apply_stylesheet
@@ -64,9 +65,16 @@ class AutomationClipsApp(QMainWindow):
         label_generate.setFont(QFont("Courier", 10, QFont.Bold))
         layout_generate.addWidget(label_generate)
 
-        input_generate = QLineEdit("Geben Sie Ihren Text ein")
-        input_generate.setFont(QFont("Courier", 10, QFont.Bold))
-        layout_generate.addWidget(input_generate)
+        self.text_input = QTextEdit("Geben Sie Ihren Text ein")
+        self.text_input.setFont(QFont("Courier", 10, QFont.Bold))
+        layout_generate.addWidget(self.text_input)
+
+        self.video_settings = QComboBox()
+        self.video_settings.addItems(["720p", "1080p", "4K"])
+        layout_generate.addWidget(self.video_settings)
+
+        self.generate_progress = QProgressBar()
+        layout_generate.addWidget(self.generate_progress)
 
         btn_start_generation = QPushButton("Generieren starten")
         btn_start_generation.setFont(QFont("Courier", 10, QFont.Bold))
@@ -81,15 +89,28 @@ class AutomationClipsApp(QMainWindow):
         label_upload.setFont(QFont("Courier", 10, QFont.Bold))
         layout_upload.addWidget(label_upload)
 
-        input_upload = QLineEdit("Pfad zum Video")
-        input_upload.setFont(QFont("Courier", 10, QFont.Bold))
-        layout_upload.addWidget(input_upload)
+        self.input_upload = QLineEdit("Pfad zum Video")
+        self.input_upload.setFont(QFont("Courier", 10, QFont.Bold))
+        layout_upload.addWidget(self.input_upload)
+
+        btn_select_file = QPushButton("Datei auswählen")
+        btn_select_file.setFont(QFont("Courier", 10, QFont.Bold))
+        btn_select_file.clicked.connect(self.openFileDialog)
+        layout_upload.addWidget(btn_select_file)
+
+        self.upload_progress = QProgressBar()
+        layout_upload.addWidget(self.upload_progress)
 
         btn_start_upload = QPushButton("Hochladen starten")
         btn_start_upload.setFont(QFont("Courier", 10, QFont.Bold))
         layout_upload.addWidget(btn_start_upload)
 
         self.main_content.addTab(page_upload, "Hochladen")
+
+    def openFileDialog(self):
+        file_name, _ = QFileDialog.getOpenFileName(self, "Datei auswählen", "", "Video Files (*.mp4 *.avi *.mov)")
+        if file_name:
+            self.input_upload.setText(file_name)
 
     def initPageDrafts(self):
         page_drafts = QWidget()
@@ -118,4 +139,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
